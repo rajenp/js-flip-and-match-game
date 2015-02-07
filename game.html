@@ -537,7 +537,7 @@ Extend(GuessingGame, UIObject, {
 });
 
 var CHAR_A = 65, count = 6;
-var letters = [], start = (Utils.getRandom(0, 25) - count);
+var letters = [], start = (Utils.getRandom(count, 25) - count);
 while (count) {
     letters.push({letter:String.fromCharCode(CHAR_A + start + count--)});    
 }
