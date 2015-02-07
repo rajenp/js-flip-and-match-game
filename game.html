@@ -10,6 +10,12 @@
         body {
             background: #ddd;
             margin: 5% auto;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         .letter {
             font-size: 150px;
@@ -19,14 +25,13 @@
             text-align: center;
             padding: 30px;
         }
-
         .layout {
             border: 1px solid #bbb;
             margin: auto;
             -moz-box-shadow: 8px 8px 5px gray;
             box-shadow: 8px 8px 5px gray;
             background: #fff;
-            width: 610px;
+            max-width: 824px;
             white-space: nowrap;
             padding: 30px;
         }
@@ -45,7 +50,6 @@
             -moz-border-radius: 20px;
             border-radius: 20px;
         }
-
         .grid {
             -moz-perspective: 800;
             -o-perspective: 800;
@@ -53,7 +57,6 @@
             position: relative;
             margin: 20px auto 20px 10px;
         }
-
         .tile {
             margin: 10px;
             width: 175px;
@@ -179,7 +182,6 @@
     </style>
 </head>
 <body>
-
 <div class="layout">
     <div class="title">Guessing Game - HTML(5), CSS3, JS</div>
     <div id="msg_div_top" class="message"></div>
@@ -276,7 +278,12 @@ var Extend = function(Child, Parent, prototypes) {
         Child.prototype[key] = value;
     })
 };
-
+var Utils = {
+    //Finds random
+    getRandom: function(start, end) {
+        return Math.floor(Math.random() * (end - start + 1) + start);
+    }
+};
 //Global UI objects list
 var _registry = {};
 _count = 1;
@@ -388,7 +395,7 @@ Extend(Tile, UIObject, {
     },
     //Compare with another tile
     equals: function(tile) {
-        return tile instanceof Tile && tile.id != this.id && this._letter === tile._letter && this._phrase === tile._phrase;
+        return tile instanceof Tile && tile.id != this.id && this._letter.toLowerCase() === tile._letter.toLowerCase() && this._phrase === tile._phrase;
     },
     //reset the state
     reset: function() {
@@ -416,10 +423,6 @@ GuessingGame.DIALOG_TMPL = '<div id="success" class="msg_box"> \
 
 //Extends UIObject
 Extend(GuessingGame, UIObject, {
-    //Finds random
-    _getRandom: function(start, end) {
-        return Math.floor(Math.random() * (end - start + 1) + start);
-    },
     _setMessage: function(dom, message) {
         if (dom) {
             if (message) {
@@ -441,17 +444,17 @@ Extend(GuessingGame, UIObject, {
         var me = this;
         $each(this._tiles, function(tile) {
             tile.reset();
-            var random = me._getRandom(start, end);
+            var random = Utils.getRandom(start, end);
             while (reshuffled[random]) { //already taken, find next
-                random = me._getRandom(start, end);
+                random = Utils.getRandom(start, end);
             }
             reshuffled[random] = tile;
         });
         this._tiles = reshuffled;
     },
     //Create a tile for the given item
-    _createTile: function(item) {
-        var tile = new Tile(item.letter, item.phrase);
+    _createTile: function(letter) {
+        var tile = new Tile(letter, "");//, item.phrase);
         tile.listen(Tile.EVENT_STATE_CHANGED, new Callback(this.tileStateChanged, this));
         return tile;
     },
@@ -513,8 +516,8 @@ Extend(GuessingGame, UIObject, {
         var me = this;
         $each(this._data, function(item) {
             //2 tiles for 1 item
-            me._tiles.push(me._createTile(item));
-            me._tiles.push(me._createTile(item));
+            me._tiles.push(me._createTile(item.letter));
+            me._tiles.push(me._createTile(item.letter.toLowerCase()));
         });
     },
     //Play - reshuffle, and rerender the tiles
@@ -533,16 +536,14 @@ Extend(GuessingGame, UIObject, {
     }
 });
 
-
-var CODE_FPR_A = 65;
-var letters = [];
-for(var idx = 0; idx < 6; idx++) {
-    letters.push({letter:[String.fromCharCode(CODE_FPR_A + idx)]});    
+var CHAR_A = 65, count = 6;
+var letters = [], start = (Utils.getRandom(0, 25) - count);
+while (count) {
+    letters.push({letter:String.fromCharCode(CHAR_A + start + count--)});    
 }
-
 var myGame = new GuessingGame(letters, "grid");
 myGame.start();
-//});
+
 </script>
 </body>
 </html>
