@@ -9,7 +9,7 @@
     <style>
         body {
             background: #ddd;
-            margin: 5% auto;
+            margin: 0 auto;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
@@ -23,7 +23,7 @@
         .title {
             font: 38px bold;
             text-align: center;
-            padding: 30px;
+            padding: 10px;
         }
         .layout {
             border: 1px solid #bbb;
@@ -418,7 +418,8 @@ var GuessingGame = function(data, gridContainer) { //constructor
 //Success dialog TMPL
 GuessingGame.DIALOG_TMPL = '<div id="success" class="msg_box"> \
         <div><div class="icon">&#x2713;</div> Good job! </div> \
-        <div class="play_again"><input id="play_again_btn" type="button" value="Play again" onclick="UIObject.domEvent(<%=id%>,\'start\')"/></div> \
+        <div class="play_again"><input id="play_again_btn" \
+        type="button" value="Play again" onclick="play_a_game()"/></div> \
     </div>';
 
 //Extends UIObject
@@ -536,13 +537,20 @@ Extend(GuessingGame, UIObject, {
     }
 });
 
-var CHAR_A = 65, count = 6;
-var letters = [], start = (Utils.getRandom(count, 25) - count);
-while (count) {
-    letters.push({letter:String.fromCharCode(CHAR_A + start + count--)});    
-}
-var myGame = new GuessingGame(letters, "grid");
-myGame.start();
+var play_a_game = function() {
+    var CHAR_A = 65, 
+        count = 6, 
+        myGame, 
+        letters = [], 
+        start = (Utils.getRandom(count, 25) - count);
+    while (count) {
+        letters.push({letter:String.fromCharCode(CHAR_A + start + count--)});    
+    }
+    myGame = new GuessingGame(letters, "grid");
+    myGame.start();
+};
+
+play_a_game();
 
 </script>
 </body>
